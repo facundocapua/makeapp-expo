@@ -3,7 +3,7 @@ import { CALENDAR_NAME } from "@/lib/google/utils";
 import { GoogleSignin, User } from "@react-native-google-signin/google-signin";
 import { useContext, createContext, useState } from "react";
 
-type ExtenderUser = User & {
+export type ExtendedUser = User & {
   accessToken: string;
   calendarId: string;
 };
@@ -11,15 +11,15 @@ type ExtenderUser = User & {
 type SessionContext = {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
-  setSession: (session: ExtenderUser) => void;
-  session: ExtenderUser | null;
+  setSession: (session: ExtendedUser) => void;
+  session: ExtendedUser | null;
   isLoading: boolean;
 };
 
 const AuthContext = createContext<SessionContext>({
   signIn: () => Promise.resolve(),
   signOut: () => Promise.resolve(),
-  setSession: (session: ExtenderUser) => {},
+  setSession: (session: ExtendedUser) => {},
   session: null,
   isLoading: false,
 });
@@ -41,7 +41,7 @@ type Props = {
 };
 
 export function SessionProvider({ children }: Props) {
-  const [session, setSession] = useState<ExtenderUser | null>(null);
+  const [session, setSession] = useState<ExtendedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const signIn = async () => {
     try {

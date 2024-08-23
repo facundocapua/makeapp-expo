@@ -1,71 +1,38 @@
-import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, SectionList, Text } from "react-native";
 import { getCalendarEvents } from "../lib/google/calendar";
 import { AnimatedEventCard } from "./EventCard";
 import { Screen } from "./Screen";
-import { useSession } from "./SessionProvider";
-import {
-  EventType,
-  GroupedEventCollection,
-  GroupedEventItemType,
-} from "@/types/event";
+import { ExtendedUser, useSession } from "./SessionProvider";
 import { formatDate } from "@/lib/format";
+import { groupByDate } from "@/lib/utils/events";
+import { useQuery } from "react-query";
 
-export const groupByDate = (events: EventType[]): GroupedEventItemType[] => {
-  const groupedEvents = events.reduce(
-    (current: GroupedEventCollection, item) => {
-      const startDate = new Date(item.date);
-      startDate.setHours(23, 59, 59);
-      const dateIndex = `${startDate.getFullYear()}_${startDate.getMonth()}_${startDate.getDate()}`;
-      current[dateIndex] ??= {
-        title: startDate.toString(),
-        data: [],
-      };
-      current[dateIndex].data.push(item);
-      return current;
-    },
-    {},
-  );
-  const response = Object.values(groupedEvents);
-  response.map((group) => {
-    group.data.sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return dateA.getTime() - dateB.getTime();
-    });
-
-    return group;
+const getGroupedEvents = (session: ExtendedUser) => {
+  return getCalendarEvents({
+    calendarId: session.calendarId,
+    accessToken: session.accessToken,
+  }).then((events) => {
+    const groupedEvents = groupByDate(events);
+    return groupedEvents;
   });
-  return response;
 };
 
 export function Main() {
-  const [events, setEvents] = useState<GroupedEventItemType[]>([]);
   const { session } = useSession();
 
-  useEffect(() => {
-    if (!session) return;
-
-    getCalendarEvents({
-      calendarId: session.calendarId,
-      accessToken: session.accessToken,
-    }).then((events) => {
-      const groupedEvents = groupByDate(events);
-      setEvents(groupedEvents);
-    });
-  }, [session]);
+  const { isLoading, data: events } = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => {
+      return getGroupedEvents(session!);
+    },
+    enabled: !!session,
+  });
 
   if (!session) return null;
 
   return (
     <Screen>
-      {events.length === 0 ? (
+      {isLoading || !events ? (
         <ActivityIndicator size="large" color="#fff" />
       ) : (
         <SectionList

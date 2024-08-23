@@ -1,29 +1,30 @@
 import { Stack } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Screen } from "../../components/Screen";
-import { useEffect, useState } from "react";
 import { getCalendarEvent } from "../../lib/google/calendar";
 import { useSession } from "@/components/SessionProvider";
-import { EventType } from "@/types/event";
+import { useQuery } from "react-query";
+import { EventDetail } from "@/components/EventDetail";
 
 export default function EventView() {
   const { id } = useLocalSearchParams();
-  const [eventInfo, setEventInfo] = useState<EventType | null>(null);
 
   const { session } = useSession();
 
-  useEffect(() => {
-    if (id && session) {
-      getCalendarEvent({
-        calendarId: session.calendarId,
+  const { data: eventInfo } = useQuery({
+    queryKey: [`event-${id}`],
+    queryFn: async () => {
+      return getCalendarEvent({
+        calendarId: session!.calendarId,
         eventId: id as string,
-        accessToken: session.accessToken,
+        accessToken: session!.accessToken,
       }).then((event) => {
-        setEventInfo(event);
+        return event;
       });
-    }
-  }, [id, session]);
+    },
+    enabled: !!session && !!id,
+  });
 
   return (
     <Screen>
@@ -37,14 +38,10 @@ export default function EventView() {
         }}
       />
       <View>
-        {eventInfo === null ? (
+        {!eventInfo ? (
           <ActivityIndicator size="large" color="#fff" />
         ) : (
-          <View>
-            <Text className="text-white text-2xl font-bold mb-8">
-              {eventInfo.fullName}
-            </Text>
-          </View>
+          <EventDetail event={eventInfo} />
         )}
       </View>
     </Screen>

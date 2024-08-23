@@ -1,5 +1,5 @@
 import { Image, View } from "react-native";
-import logo from "../assets/logo.png";
+import logo from "@/assets/logo.png";
 
 export function Logo() {
   return (
