@@ -3,20 +3,10 @@ import { EventType } from "@/types/event";
 import { Zoomable } from "@likashefqet/react-native-image-zoom";
 import { Image, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaymentStatus } from "./payment-status";
 
 type Props = {
   event: EventType;
-};
-
-const PaymentStatus = ({ event }: Props) => {
-  const { deposit, price } = event;
-  const pending = price - deposit;
-
-  if (pending === 0) {
-    return <Text className="text-green-500 text-xl">Pagado</Text>;
-  }
-
-  return <Text className="text-red-600 text-xl">Pendiente ${pending}</Text>;
 };
 
 export const EventDetail = ({ event }: Props) => {

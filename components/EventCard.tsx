@@ -3,10 +3,15 @@ import { formatTime } from "../lib/format";
 import { useEffect, useRef } from "react";
 import { Link } from "expo-router";
 import { styled } from "nativewind";
+import { EventType } from "@/types/event";
 
 const StyledPressable = styled(Pressable);
 
-export function EventCard({ event }) {
+type Props = {
+  event: EventType;
+};
+
+export function EventCard({ event }: Props) {
   return (
     <Link href={`/${event.id}`} asChild>
       <StyledPressable className="bg-neutral-700 my-2 rounded-lg  active:opacity-50">
@@ -21,7 +26,7 @@ export function EventCard({ event }) {
   );
 }
 
-export function AnimatedEventCard({ event, index }) {
+export function AnimatedEventCard({ event, index }: Props & { index: number }) {
   const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

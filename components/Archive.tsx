@@ -9,15 +9,17 @@ import { useQuery } from "react-query";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { NoEvents } from "./NoEvents";
 
-const getGroupedEvents = (session: ExtendedUser) => {
+const getGroupedPastEvents = (session: ExtendedUser) => {
   const today = new Date();
   const params = {
     calendarId: session.calendarId,
     accessToken: session.accessToken,
-    since: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    since: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+    to: today,
   };
 
   const events = getCalendarEvents(params).then((events) => {
+    events.reverse();
     const groupedEvents = groupByDate(events);
     return groupedEvents;
   });
@@ -25,13 +27,13 @@ const getGroupedEvents = (session: ExtendedUser) => {
   return events;
 };
 
-export function Main() {
+export function Archive() {
   const { session } = useSession();
 
   const { isLoading, data: events } = useQuery({
-    queryKey: ["events"],
+    queryKey: ["past-events"],
     queryFn: async () => {
-      return getGroupedEvents(session!);
+      return getGroupedPastEvents(session!);
     },
     enabled: !!session,
   });

@@ -1,6 +1,11 @@
 import { Tabs } from "expo-router";
 
-import { HomeIcon, InfoIcon } from "../../../components/Icons";
+import {
+  ArchiveIcon,
+  CalendarIcon,
+  GearIcon,
+  MoneyIcon,
+} from "../../../components/Icons";
 
 export default function TabsLayout() {
   return (
@@ -17,15 +22,29 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => <HomeIcon color={color} />,
+          title: "Calendario",
+          tabBarIcon: ({ color }) => <CalendarIcon color={color} />,
         }}
       />
       <Tabs.Screen
-        name="about"
+        name="archive"
         options={{
-          title: "About",
-          tabBarIcon: ({ color }) => <InfoIcon color={color} />,
+          title: "Archivo",
+          tabBarIcon: ({ color }) => <ArchiveIcon color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="income"
+        options={{
+          title: "Ingresos",
+          tabBarIcon: ({ color }) => <MoneyIcon color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Configuración",
+          tabBarIcon: ({ color }) => <GearIcon color={color} />,
         }}
       />
     </Tabs>

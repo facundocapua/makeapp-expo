@@ -1,6 +1,6 @@
 import { Link, Stack } from "expo-router";
 import { ActivityIndicator, Pressable, View } from "react-native";
-import { CircleInfoIcon } from "../../components/Icons";
+import { CalendarPlusIcon } from "../../components/Icons";
 import { Logo } from "../../components/Logo";
 import { useSession } from "../../components/SessionProvider";
 import { Login } from "../../components/Login";
@@ -40,14 +40,22 @@ export default function MainLayout() {
           headerTitle: "",
           headerLeft: () => <Logo />,
           headerRight: () => (
-            <Link href="/about" asChild>
+            <Link href="/create" asChild>
               <Pressable>
-                <CircleInfoIcon />
+                <CalendarPlusIcon />
               </Pressable>
             </Link>
           ),
         }}
-      />
+      >
+        <Stack.Screen
+          name="create"
+          options={{
+            // Set the presentation mode to modal for our modal route.
+            presentation: "modal",
+          }}
+        />
+      </Stack>
     </View>
   );
 }
