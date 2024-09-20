@@ -9,8 +9,8 @@ import { Pressable, Text } from "react-native";
 import { useMutation, useQueryClient } from "react-query";
 
 const isValid = (event: EventType) => {
-  if (event.name === "") return false;
-  if (event.price === "") return false;
+  if (event.fullName === "") return false;
+  if (event.price > 0) return false;
 
   return true;
 };
@@ -34,7 +34,7 @@ export default function CreateEvent() {
     },
   });
 
-  const handleChange = (data) => {
+  const handleChange = (data: EventType) => {
     setCanAdd(isValid(data));
     setEvent(data);
   };
