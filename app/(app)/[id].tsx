@@ -32,9 +32,9 @@ export default function EventView() {
         options={{
           headerStyle: { backgroundColor: "#999" },
           headerTintColor: "#fff",
-          headerLeft: () => {},
+          headerLeft: undefined,
           headerTitle: eventInfo ? eventInfo.fullName : "Cargando...",
-          headerRight: () => {},
+          headerRight: undefined,
         }}
       />
       <View>

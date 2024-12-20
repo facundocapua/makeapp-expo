@@ -2,10 +2,7 @@ import { Animated, Pressable, Text, View } from "react-native";
 import { formatTime } from "../lib/format";
 import { useEffect, useRef } from "react";
 import { Link } from "expo-router";
-import { styled } from "nativewind";
 import { EventType } from "@/types/event";
-
-const StyledPressable = styled(Pressable);
 
 type Props = {
   event: EventType;
@@ -14,14 +11,14 @@ type Props = {
 export function EventCard({ event }: Props) {
   return (
     <Link href={`/${event.id}`} asChild>
-      <StyledPressable className="bg-neutral-700 my-2 rounded-lg  active:opacity-50">
+      <Pressable className="bg-neutral-700 my-2 rounded-lg  active:opacity-50">
         <View className="flex-row items-center py-4">
           <Text className="text-sm text-white w-1/5 text-center">
             {formatTime(event.date)}
           </Text>
           <Text className="text-lg text-white">{event.fullName}</Text>
         </View>
-      </StyledPressable>
+      </Pressable>
     </Link>
   );
 }

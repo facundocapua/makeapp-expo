@@ -1,6 +1,7 @@
 import { Slot } from "expo-router";
 import { SessionProvider } from "../components/SessionProvider";
 import { QueryClient, QueryClientProvider } from "react-query";
+import "../global.css";
 
 const queryClient = new QueryClient();
 
