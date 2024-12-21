@@ -1,6 +1,7 @@
 import { EventType } from "@/types/event";
 import { GoogleEventType } from "./types";
 import { CALENDAR_DEFAULT_TIMEZONE, makeApiCall } from "./utils";
+import { generateEventObject } from "@/lib/utils/google";
 
 export type CalendarType = {
   id: string;
@@ -129,7 +130,7 @@ export const getCalendarEvent = ({
 
 export type CreateUpdateEventProps = {
   calendarId: string;
-  event: any;
+  event: EventType;
   accessToken: string;
 };
 
@@ -138,11 +139,13 @@ export const createEvent = ({
   event,
   accessToken,
 }: CreateUpdateEventProps): Promise<GoogleEventType> => {
+  const data = generateEventObject(event);
+
   return makeApiCall({
     url: `/calendar/v3/calendars/${calendarId}/events`,
     accessToken,
     method: "POST",
-    data: event,
+    data,
   })
     .then((res) => res.json())
     .then((res) => {

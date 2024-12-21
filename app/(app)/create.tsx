@@ -3,14 +3,15 @@ import { Screen } from "@/components/Screen";
 import { useSession } from "@/components/SessionProvider";
 import { createEvent } from "@/lib/google/calendar";
 import { EventType } from "@/types/event";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text } from "react-native";
+import Toast from "react-native-toast-message";
 import { useMutation, useQueryClient } from "react-query";
 
 const isValid = (event: EventType) => {
   if (event.fullName === "") return false;
-  if (event.price > 0) return false;
+  if (event.price <= 0) return false;
 
   return true;
 };
@@ -20,6 +21,7 @@ export default function CreateEvent() {
   const [event, setEvent] = useState<EventType>();
   const { session } = useSession();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const createEventMutation = useMutation({
     mutationFn: (event: EventType) => {
@@ -30,7 +32,15 @@ export default function CreateEvent() {
       });
     },
     onSuccess: async () => {
+      Toast.show({
+        type: "success", // or 'error' or 'delete'
+        text1: "Cita creada",
+        text2: "La cita ha sido creada exitosamente.",
+      });
+
       await queryClient.invalidateQueries("events");
+
+      router.replace("/");
     },
   });
 

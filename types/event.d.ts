@@ -1,7 +1,7 @@
 export type EventType = {
   id: string;
   fullName: string;
-  date: string;
+  date: string | Date;
   price: number;
   deposit: number;
   duration: 30 | 45 | 60 | 90 | 120;

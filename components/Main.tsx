@@ -1,4 +1,4 @@
-import { SectionList, Text } from "react-native";
+import { Button, SectionList, Text } from "react-native";
 import { getCalendarEvents } from "../lib/google/calendar";
 import { AnimatedEventCard } from "./EventCard";
 import { Screen } from "./Screen";
@@ -8,6 +8,7 @@ import { groupByDate } from "@/lib/utils/events";
 import { useQuery } from "react-query";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { NoEvents } from "./NoEvents";
+import Toast from "react-native-toast-message";
 
 const getGroupedEvents = (session: ExtendedUser) => {
   const today = new Date();

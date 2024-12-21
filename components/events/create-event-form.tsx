@@ -5,12 +5,20 @@ import { Picker } from "@react-native-picker/picker";
 import { PaymentStatus } from "../payment-status";
 import { EventType } from "@/types/event";
 
-const defaultEventInfo: EventType = {
-  name: "",
+type EventForm = {
+  fullName: string;
+  date: Date;
+  duration: number;
+  price: number;
+  deposit: number;
+};
+
+const defaultEventInfo: EventForm = {
+  fullName: "",
   date: new Date(),
-  duration: "60",
-  price: "",
-  deposit: "",
+  duration: 60,
+  price: 0,
+  deposit: 0,
 };
 
 type Props = {
@@ -18,12 +26,17 @@ type Props = {
 };
 
 export const CreateEventForm = ({ onChange }: Props) => {
-  const [eventInfo, setEventInfo] = useState<EventType>(defaultEventInfo);
-  const setValue = (newData) => {
+  const [eventInfo, setEventInfo] = useState<EventForm>(defaultEventInfo);
+  const setValue = (newData: Partial<EventForm>) => {
     const newEventInfo = { ...eventInfo, ...newData };
     setEventInfo(newEventInfo);
-    onChange(newEventInfo);
+    onChange(newEventInfo as EventType);
   };
+  const minDate = new Date();
+  minDate.setHours(0);
+  minDate.setMinutes(0);
+  minDate.setSeconds(0);
+
   return (
     <View>
       <View className="m-4 bg-white/30 p-2 rounded-md">
@@ -32,8 +45,8 @@ export const CreateEventForm = ({ onChange }: Props) => {
           placeholderTextColor={"#999"}
           autoFocus
           placeholder="Nombre"
-          value={eventInfo.name}
-          onChangeText={(text) => setValue({ name: text })}
+          value={eventInfo.fullName}
+          onChangeText={(text) => setValue({ fullName: text })}
         />
       </View>
 
@@ -49,7 +62,7 @@ export const CreateEventForm = ({ onChange }: Props) => {
             locale="es-AR"
             display="default"
             minuteInterval={15}
-            minimumDate={new Date()}
+            minimumDate={minDate}
           />
         </View>
         <View className="mx-4">
@@ -77,7 +90,7 @@ export const CreateEventForm = ({ onChange }: Props) => {
             className="text-white text-lg my-2"
             placeholderTextColor={"#999"}
             placeholder="Precio"
-            value={eventInfo.price}
+            value={String(eventInfo.price)}
             onChangeText={(text) => setValue({ price: Number(text) })}
             keyboardType="numeric"
             inputMode="numeric"
@@ -88,7 +101,7 @@ export const CreateEventForm = ({ onChange }: Props) => {
             className="text-white text-lg my-2"
             placeholderTextColor={"#999"}
             placeholder="Seña"
-            value={eventInfo.deposit}
+            value={String(eventInfo.deposit)}
             onChangeText={(text) => setValue({ deposit: Number(text) })}
             keyboardType="numeric"
             inputMode="numeric"
@@ -97,7 +110,7 @@ export const CreateEventForm = ({ onChange }: Props) => {
         <View className="mx-4 py-6">
           <View className="justify-between flex-row">
             <Text className="text-white text-lg">Estado del pago</Text>
-            <PaymentStatus event={eventInfo} />
+            <PaymentStatus event={eventInfo as EventType} />
           </View>
         </View>
       </View>

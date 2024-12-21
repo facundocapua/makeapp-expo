@@ -39,3 +39,15 @@ export const MoneyIcon = (props: Props) => {
 export const ChevronLeft = (props: Props) => {
   return <FontAwesome name="chevron-left" size={24} color="white" {...props} />;
 };
+
+export const CheckCircleIcon = (props: Props) => {
+  return <FontAwesome name="check-circle" size={24} color="white" {...props} />;
+};
+
+export const CrossCircleIcon = (props: Props) => {
+  return <FontAwesome name="times-circle" size={24} color="white" {...props} />;
+};
+
+export const WarningIcon = (props: Props) => {
+  return <FontAwesome name="warning" size={24} color="white" {...props} />;
+};
