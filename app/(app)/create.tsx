@@ -7,7 +7,7 @@ import { Link, Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, Text } from "react-native";
 import Toast from "react-native-toast-message";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const isValid = (event: EventType) => {
   if (event.fullName === "") return false;

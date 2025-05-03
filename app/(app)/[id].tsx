@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { Screen } from "../../components/Screen";
 import { getCalendarEvent } from "../../lib/google/calendar";
 import { useSession } from "@/components/SessionProvider";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { EventDetail } from "@/components/EventDetail";
 
 export default function EventView() {

@@ -5,7 +5,7 @@ import { Screen } from "./Screen";
 import { ExtendedUser, useSession } from "./SessionProvider";
 import { formatDate } from "@/lib/format";
 import { groupByDate } from "@/lib/utils/events";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { NoEvents } from "./NoEvents";
 
