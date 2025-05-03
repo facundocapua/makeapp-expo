@@ -37,7 +37,8 @@ export default function EventView() {
           headerRight: undefined,
         }}
       />
-      <View>
+
+      <View className="h-full">
         {!eventInfo ? (
           <ActivityIndicator size="large" color="#fff" />
         ) : (

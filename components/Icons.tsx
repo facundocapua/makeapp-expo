@@ -51,3 +51,19 @@ export const CrossCircleIcon = (props: Props) => {
 export const WarningIcon = (props: Props) => {
   return <FontAwesome name="warning" size={24} color="white" {...props} />;
 };
+
+export const ClockIcon = (props: Props) => {
+  return <FontAwesome name="clock-o" size={24} color="white" {...props} />;
+};
+
+export const CameraIcon = (props: Props) => {
+  return <FontAwesome name="camera" size={24} color="white" {...props} />;
+};
+
+export const PhotoIcon = (props: Props) => {
+  return <FontAwesome name="photo" size={24} color="white" {...props} />;
+};
+
+export const ShareIcon = (props: Props) => {
+  return <FontAwesome name="share-alt" size={24} color="white" {...props} />;
+};

@@ -21,7 +21,8 @@
               "com.googleusercontent.apps.85456588535-kn2999smr8u1g7oprt57lnckdpv8iuqo"
             ]
           }
-        ]
+        ],
+        "NSCameraUsageDescription": "La aplicación accede a tu cámara para poder tomar fotos y agregarlas a las citas como referencia."
       },
       "bundleIdentifier": "com.facundocapua.makeapp"
     },
@@ -41,6 +42,13 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.85456588535-kn2999smr8u1g7oprt57lnckdpv8iuqo"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La aplicación accede a tus fotos para poder agregarlas a las citas como referencia.",
+          "cameraPermission": "La aplicación accede a tu cámara para poder tomar fotos y agregarlas a las citas como referencia."
         }
       ]
     ],
