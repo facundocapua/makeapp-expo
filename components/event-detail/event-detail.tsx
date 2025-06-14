@@ -1,13 +1,20 @@
 import { formatDateTime, formatPrice } from "@/lib/format";
 import { EventType } from "@/types/event";
 import { Zoomable } from "@likashefqet/react-native-image-zoom";
-import { Image, Text, View, Pressable } from "react-native";
+import { Image, Text, View, Pressable, ScrollView } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaymentStatus } from "../payment-status";
 
-import { CameraIcon, PhotoIcon, ShareIcon } from "@/components/Icons";
+import {
+  CameraIcon,
+  MoneyIcon,
+  PhotoIcon,
+  ShareIcon,
+} from "@/components/Icons";
 import { useSession } from "../SessionProvider";
 import { createTakePhoto, createUploadImage, shareEvent } from "./actions";
+import { EditableValue } from "./editable-value";
+import { EditableDate } from "./editable-date";
 
 type Props = {
   event: EventType;
@@ -35,22 +42,38 @@ export const EventDetail = ({ event, onChange }: Props) => {
     });
   };
 
+  const updateValue = (field: string, value: string | number | Date) => {
+    const updatedEvent = { ...event, [field]: value };
+    onChange(updatedEvent);
+  };
+
   return (
-    <View className="flex-1 flex-col h-full">
-      <View className="flex-grow">
-        <View className="m-2">
-          <Text className="text-white text-2xl font-bold mb-4">
+    <>
+      <ScrollView>
+        <View className="m-2 flex flex-col gap-y-6">
+          <Text className="text-white text-2xl font-bold">
             {event.fullName}
           </Text>
-          <Text className="text-neutral-200 text-lg mb-4">
-            {formatDateTime(event.date)}
-          </Text>
-          <Text className="text-white text-xl">
-            Precio: {formatPrice(event.price)}
-          </Text>
-          <Text className="text-white text-xl">
-            Abonado: {formatPrice(event.deposit)}
-          </Text>
+          <EditableDate
+            value={event.date}
+            format={formatDateTime}
+            label="Fecha y hora"
+            onChange={(value) => updateValue("date", value)}
+          />
+          <EditableValue
+            value={event.price}
+            format={formatPrice}
+            icon={<MoneyIcon />}
+            label="Precio"
+            onChange={(value) => updateValue("price", value)}
+          />
+          <EditableValue
+            value={event.deposit}
+            format={formatPrice}
+            icon={<MoneyIcon />}
+            label="Abonado"
+            onChange={(value) => updateValue("deposit", value)}
+          />
           <View className="flex-row mb-4">
             <Text className="text-white text-xl mr-2">Estado del pago:</Text>
             <PaymentStatus event={event} />
@@ -74,7 +97,7 @@ export const EventDetail = ({ event, onChange }: Props) => {
             </Zoomable>
           </GestureHandlerRootView>
         )}
-      </View>
+      </ScrollView>
       <View className="pb-8 pt-4 flex-row w-full justify-evenly border-t border-white/50">
         <Pressable onPress={takePhoto}>
           <View className="flex-col items-center gap-2">
@@ -95,6 +118,6 @@ export const EventDetail = ({ event, onChange }: Props) => {
           </View>
         </Pressable>
       </View>
-    </View>
+    </>
   );
 };

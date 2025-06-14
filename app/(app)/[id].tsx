@@ -49,7 +49,12 @@ export default function EventView() {
         text2: "La cita ha sido actualizada exitosamente.",
       });
 
-      await queryClient.invalidateQueries({ queryKey: [`event-${data.id}`] });
+      await queryClient.invalidateQueries({
+        queryKey: [`event-${data.id}`],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["events"],
+      });
     },
   });
 
