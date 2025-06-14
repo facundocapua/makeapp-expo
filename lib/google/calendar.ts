@@ -153,3 +153,31 @@ export const createEvent = ({
       return res;
     });
 };
+
+export type UpdateEventProps = {
+  calendarId: string;
+  eventId: EventType["id"];
+  event: EventType;
+  accessToken: string;
+};
+
+export const updateEvent = ({
+  calendarId,
+  eventId,
+  event,
+  accessToken,
+}: UpdateEventProps): Promise<GoogleEventType> => {
+  const data = generateEventObject(event);
+
+  return makeApiCall({
+    url: `/calendar/v3/calendars/${calendarId}/events/${eventId}`,
+    accessToken,
+    method: "PUT",
+    data,
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log("Event updated", res);
+      return res;
+    });
+};

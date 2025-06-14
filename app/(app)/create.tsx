@@ -38,7 +38,7 @@ export default function CreateEvent() {
         text2: "La cita ha sido creada exitosamente.",
       });
 
-      await queryClient.invalidateQueries("events");
+      await queryClient.invalidateQueries({ queryKey: ["events"] });
 
       router.replace("/");
     },

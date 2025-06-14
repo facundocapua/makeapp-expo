@@ -1,17 +1,32 @@
-import { formatDateTime } from "@/lib/format";
+import {
+  formatDateShort,
+  formatDateTime,
+  formatPrice,
+  formatTime,
+} from "@/lib/format";
 import { EventType } from "@/types/event";
 import { Zoomable } from "@likashefqet/react-native-image-zoom";
-import { Image, Text, View, Pressable, Share, Alert } from "react-native";
+import { Image, Text, View, Pressable, Share } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaymentStatus } from "./payment-status";
 import * as ImagePicker from "expo-image-picker";
 import { CameraIcon, PhotoIcon, ShareIcon } from "@/components/Icons";
+import { fetchImageFromUri, uploadFile } from "@/lib/uploads";
+import { useSession } from "./SessionProvider";
 
 type Props = {
   event: EventType;
+  onChange: (event: EventType) => void;
 };
 
-export const EventDetail = ({ event }: Props) => {
+const getBalanceText = (balance: number, price: number) => {
+  if (price === 0) return "";
+  if (balance > 0) return `Te resta abonar 💰 *${formatPrice(balance)}*.`;
+  return "Ya tienes el total abonado.";
+};
+
+export const EventDetail = ({ event, onChange }: Props) => {
+  const { session } = useSession();
   const takePhoto = async () => {
     const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
     if (cameraStatus.status !== "granted") {
@@ -21,11 +36,17 @@ export const EventDetail = ({ event }: Props) => {
 
     try {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         aspect: [4, 3],
       });
       if (!result.canceled) {
-        console.log(result.assets[0].uri);
+        const imageUri = result.assets[0].uri;
+        const file = await fetchImageFromUri(imageUri);
+
+        uploadFile(file, session?.accessToken ?? "").then((data) => {
+          if (!data) return;
+          onChange({ ...event, picture: data.url });
+        });
       }
     } catch (e) {
       console.log(e);
@@ -34,36 +55,50 @@ export const EventDetail = ({ event }: Props) => {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      console.log(result.assets[0].uri);
+      const imageUri = result.assets[0].uri;
+      const file = await fetchImageFromUri(imageUri);
+
+      uploadFile(file, session?.accessToken ?? "").then((data) => {
+        if (!data) return;
+        onChange({ ...event, picture: data.url });
+      });
     }
   };
 
   const shareEvent = async () => {
-    try {
-      const result = await Share.share({
-        message:
-          "React Native | A framework for building native apps using React",
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
+    const { fullName, date, price, deposit } = event;
+
+    const day = formatDateShort(date);
+    const time = formatTime(date);
+    const balance = Math.round(price - deposit);
+    const url = "https://app.makeapp.ar/date-new.jpg";
+
+    const result = await Share.share({
+      title: "Tu turno",
+      url,
+      message: `Hola ${fullName}! 
+Tu cita es el 🗓️ *${day}* a las 🕐 *${time}*. 
+${getBalanceText(balance, price)}
+
+Confirmar assistencia. 
+Muchas gracias!
+`,
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        // shared with activity type of result.activityType
+      } else {
+        // shared
       }
-    } catch (error: any) {
-      Alert.alert(error.message);
+    } else if (result.action === Share.dismissedAction) {
+      // dismissed
     }
   };
 
@@ -76,8 +111,12 @@ export const EventDetail = ({ event }: Props) => {
         <Text className="text-neutral-200 text-lg mb-4">
           {formatDateTime(event.date)}
         </Text>
-        <Text className="text-white text-xl">Precio: ${event.price}</Text>
-        <Text className="text-white text-xl">Abonado: ${event.deposit}</Text>
+        <Text className="text-white text-xl">
+          Precio: {formatPrice(event.price)}
+        </Text>
+        <Text className="text-white text-xl">
+          Abonado: {formatPrice(event.deposit)}
+        </Text>
         <View className="flex-row mb-4">
           <Text className="text-white text-xl mr-2">Estado del pago:</Text>
           <PaymentStatus event={event} />
@@ -90,7 +129,7 @@ export const EventDetail = ({ event }: Props) => {
               minScale={0.5}
               maxScale={5}
               doubleTapScale={3}
-              minPanPointers={1}
+              maxPanPointers={1}
             >
               <Image
                 source={{ uri: event.picture }}

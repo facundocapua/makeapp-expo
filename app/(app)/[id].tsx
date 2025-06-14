@@ -2,15 +2,18 @@ import { Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Screen } from "../../components/Screen";
-import { getCalendarEvent } from "../../lib/google/calendar";
+import { getCalendarEvent, updateEvent } from "../../lib/google/calendar";
 import { useSession } from "@/components/SessionProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EventDetail } from "@/components/EventDetail";
+import Toast from "react-native-toast-message";
+import { EventType } from "@/types/event";
 
 export default function EventView() {
   const { id } = useLocalSearchParams();
 
   const { session } = useSession();
+  const queryClient = useQueryClient();
 
   const { data: eventInfo } = useQuery({
     queryKey: [`event-${id}`],
@@ -25,6 +28,30 @@ export default function EventView() {
     },
     enabled: !!session && !!id,
   });
+
+  const updateEventMutation = useMutation({
+    mutationFn: (event: EventType) => {
+      return updateEvent({
+        calendarId: session!.calendarId,
+        eventId: event.id as string,
+        event,
+        accessToken: session!.accessToken,
+      });
+    },
+    onSuccess: async (data) => {
+      Toast.show({
+        type: "success", // or 'error' or 'delete'
+        text1: "Cita actualizada",
+        text2: "La cita ha sido actualizada exitosamente.",
+      });
+
+      await queryClient.invalidateQueries({ queryKey: [`event-${data.id}`] });
+    },
+  });
+
+  const handleChange = (data: EventType) => {
+    updateEventMutation.mutate(data);
+  };
 
   return (
     <Screen>
@@ -42,7 +69,7 @@ export default function EventView() {
         {!eventInfo ? (
           <ActivityIndicator size="large" color="#fff" />
         ) : (
-          <EventDetail event={eventInfo} />
+          <EventDetail event={eventInfo} onChange={handleChange} />
         )}
       </View>
     </Screen>

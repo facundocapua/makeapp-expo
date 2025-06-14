@@ -1,10 +1,10 @@
-export const formatDisplayName = (name) => {
+export const formatDisplayName = (name: string | null) => {
   if (String(name) === "") return "Anónimo";
 
   return name;
 };
 
-export const formatDateComputer = (date) => {
+export const formatDateComputer = (date: string | Date) => {
   const dateObj = new Date(date);
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -13,9 +13,9 @@ export const formatDateComputer = (date) => {
   return [year, month, day].join("-");
 };
 
-export const formatDate = (date) => {
+export const formatDate = (date: string | Date) => {
   const dateObj = new Date(date);
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
     month: "short",
     weekday: "long",
@@ -26,9 +26,9 @@ export const formatDate = (date) => {
   return dateObj.toLocaleDateString("es-AR", options);
 };
 
-export const formatDateShort = (date) => {
+export const formatDateShort = (date: string | Date) => {
   const dateObj = new Date(date);
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     day: "2-digit",
     month: "2-digit",
     hour12: false,
@@ -37,9 +37,9 @@ export const formatDateShort = (date) => {
   return dateObj.toLocaleDateString("es-AR", options);
 };
 
-export const formatDateTime = (date) => {
+export const formatDateTime = (date: string | Date) => {
   const dateObj = new Date(date);
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "short",
     weekday: "long",
@@ -51,13 +51,13 @@ export const formatDateTime = (date) => {
   return dateObj.toLocaleDateString("es-AR", options);
 };
 
-export const formatTime = (date, round = true) => {
+export const formatTime = (date: string | Date, round = true) => {
   const dateObj = new Date(date);
   if (round) {
     const roundedMinutes = Math.round(dateObj.getMinutes() / 15) * 15;
     dateObj.setMinutes(roundedMinutes);
   }
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -65,8 +65,23 @@ export const formatTime = (date, round = true) => {
   return dateObj.toLocaleString("es-AR", options);
 };
 
-export const formatNotes = (notes) => {
+export const formatNotes = (notes: string) => {
   if (notes === "") return "Sin notas";
 
   return notes;
+};
+
+export const formatPrice = (price: number | string) => {
+  if (typeof price === "string") {
+    price = parseFloat(price);
+  }
+  if (isNaN(price) || price < 0) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 0,
+  }).format(price);
 };

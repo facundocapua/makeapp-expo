@@ -4,21 +4,21 @@ import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { PaymentStatus } from "../payment-status";
 import { EventType } from "@/types/event";
+import { EVENTS_DURATION, EVENTS_PRICES } from "@/lib/consts/events";
 
 type EventForm = {
   fullName: string;
   date: Date;
   duration: number;
-  price: number;
-  deposit: number;
+  price?: number;
+  deposit?: number;
 };
 
 const defaultEventInfo: EventForm = {
   fullName: "",
   date: new Date(),
   duration: 60,
-  price: 0,
-  deposit: 0,
+  price: EVENTS_PRICES[60],
 };
 
 type Props = {
@@ -36,6 +36,14 @@ export const CreateEventForm = ({ onChange }: Props) => {
   minDate.setHours(0);
   minDate.setMinutes(0);
   minDate.setSeconds(0);
+
+  const setDuration = (duration: number) => {
+    const price =
+      EVENTS_PRICES[duration as keyof typeof EVENTS_PRICES] ?? undefined;
+
+    console.log("Setting default price:", price, duration);
+    setValue({ price, duration });
+  };
 
   return (
     <View>
@@ -56,7 +64,9 @@ export const CreateEventForm = ({ onChange }: Props) => {
           <RNDateTimePicker
             value={eventInfo.date}
             mode="datetime"
-            onChange={(e, value) => setValue({ date: value })}
+            onChange={(e, value) => {
+              setValue({ date: value });
+            }}
             textColor="white"
             themeVariant="dark"
             locale="es-AR"
@@ -71,16 +81,21 @@ export const CreateEventForm = ({ onChange }: Props) => {
             mode="dialog"
             selectionColor={"#fff"}
             selectedValue={eventInfo.duration}
-            onValueChange={(itemValue) => setValue({ duration: itemValue })}
+            onValueChange={(itemValue) => {
+              setDuration(itemValue);
+            }}
             itemStyle={{ color: "white" }}
             dropdownIconColor={"white"}
             style={{ color: "white" }}
           >
-            <Picker.Item value="30" label="30 minutos" color="white" />
-            <Picker.Item value="45" label="45 minutos" color="white" />
-            <Picker.Item value="60" label="1 hora" color="white" />
-            <Picker.Item value="90" label="1 hora 30 minutos" color="white" />
-            <Picker.Item value="120" label="2 horas" color="white" />
+            {EVENTS_DURATION.map((duration) => (
+              <Picker.Item
+                key={duration.value}
+                value={duration.value}
+                label={duration.label}
+                color="white"
+              />
+            ))}
           </Picker>
         </View>
       </View>
@@ -90,8 +105,10 @@ export const CreateEventForm = ({ onChange }: Props) => {
             className="text-white text-lg my-2"
             placeholderTextColor={"#999"}
             placeholder="Precio"
-            value={String(eventInfo.price)}
-            onChangeText={(text) => setValue({ price: Number(text) })}
+            value={String(eventInfo.price ?? "")}
+            onChangeText={(text) =>
+              setValue({ price: text ? Number(text) : undefined })
+            }
             keyboardType="numeric"
             inputMode="numeric"
           />
@@ -101,8 +118,10 @@ export const CreateEventForm = ({ onChange }: Props) => {
             className="text-white text-lg my-2"
             placeholderTextColor={"#999"}
             placeholder="Seña"
-            value={String(eventInfo.deposit)}
-            onChangeText={(text) => setValue({ deposit: Number(text) })}
+            value={String(eventInfo.deposit ?? "")}
+            onChangeText={(text) =>
+              setValue({ deposit: text ? Number(text) : undefined })
+            }
             keyboardType="numeric"
             inputMode="numeric"
           />
