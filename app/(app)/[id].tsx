@@ -1,12 +1,5 @@
 import { router, Stack } from "expo-router";
-import {
-  ActivityIndicator,
-  Alert,
-  Button,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Screen } from "../../components/Screen";
 import {
