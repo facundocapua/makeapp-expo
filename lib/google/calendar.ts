@@ -181,3 +181,26 @@ export const updateEvent = ({
       return res;
     });
 };
+
+export type DeleteEventProps = {
+  calendarId: string;
+  eventId: EventType["id"];
+  accessToken: string;
+};
+
+export const deleteEvent = ({
+  calendarId,
+  eventId,
+  accessToken,
+}: DeleteEventProps): Promise<GoogleEventType> => {
+  return makeApiCall({
+    url: `/calendar/v3/calendars/${calendarId}/events/${eventId}`,
+    accessToken,
+    method: "DELETE",
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log("Event deleted", res);
+      return res;
+    });
+};
