@@ -29,7 +29,9 @@ export const Login = () => {
       });
       const calendarId = calendar.id;
 
-      setSession({ ...userInfo, accessToken, calendarId });
+      if (userInfo.type === "success") {
+        setSession({ ...userInfo.data, accessToken, calendarId });
+      }
     } catch (error) {
       console.error(error);
     }
