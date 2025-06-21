@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { PaymentStatus } from "../payment-status";
 import { EventType } from "@/types/event";
-import { EVENTS_DURATION, EVENTS_PRICES } from "@/lib/consts/events";
+import { EVENTS_DURATION } from "@/lib/consts/events";
+import { usePriceSettings } from "@/lib/price-settings";
+import { formatDateTime, formatPrice } from "@/lib/format";
+import { CalendarIcon, MoneyIcon, ClockIcon, FileTextIcon } from "../Icons";
 
 type EventForm = {
   fullName: string;
@@ -14,18 +17,19 @@ type EventForm = {
   deposit?: number;
 };
 
-const defaultEventInfo: EventForm = {
-  fullName: "",
-  date: new Date(),
-  duration: 60,
-  price: EVENTS_PRICES[60],
-};
-
 type Props = {
   onChange: (data: EventType) => void;
 };
 
 export const CreateEventForm = ({ onChange }: Props) => {
+  const { prices } = usePriceSettings();
+
+  const defaultEventInfo: EventForm = {
+    fullName: "",
+    date: new Date(),
+    duration: 0,
+  };
+
   const [eventInfo, setEventInfo] = useState<EventForm>(defaultEventInfo);
   const setValue = (newData: Partial<EventForm>) => {
     const newEventInfo = { ...eventInfo, ...newData };
@@ -38,29 +42,39 @@ export const CreateEventForm = ({ onChange }: Props) => {
   minDate.setSeconds(0);
 
   const setDuration = (duration: number) => {
-    const price =
-      EVENTS_PRICES[duration as keyof typeof EVENTS_PRICES] ?? undefined;
+    const price = prices[duration] ?? undefined;
 
     console.log("Setting default price:", price, duration);
     setValue({ price, duration });
   };
 
   return (
-    <View>
-      <View className="m-4 bg-white/30 p-2 rounded-md">
-        <TextInput
-          className="text-white text-lg my-2"
-          placeholderTextColor={"#999"}
-          autoFocus
-          placeholder="Nombre"
-          value={eventInfo.fullName}
-          onChangeText={(text) => setValue({ fullName: text })}
-        />
+    <View className="flex flex-col gap-6 p-4">
+      {/* Nombre */}
+      <View className="flex flex-row gap-4">
+        <View className="p-4 bg-white/20 rounded-md">
+          <FileTextIcon />
+        </View>
+        <View className="flex flex-col flex-grow">
+          <Text className="text-white/70 text-lg">Nombre</Text>
+          <TextInput
+            className="text-white text-2xl"
+            placeholderTextColor="#999"
+            autoFocus
+            placeholder="Ingresa el nombre completo"
+            value={eventInfo.fullName}
+            onChangeText={(text) => setValue({ fullName: text })}
+          />
+        </View>
       </View>
 
-      <View className="mx-4 mb-4 bg-white/30 rounded-md">
-        <View className="flex-row p-2 m-2 justify-between">
-          <Text className="text-white text-xl">Fecha</Text>
+      {/* Fecha y hora */}
+      <View className="flex flex-row gap-4">
+        <View className="p-4 bg-white/20 rounded-md">
+          <CalendarIcon />
+        </View>
+        <View className="flex flex-col flex-grow gap-y-2">
+          <Text className="text-white/70 text-lg">Fecha y hora</Text>
           <RNDateTimePicker
             value={eventInfo.date}
             mode="datetime"
@@ -75,19 +89,27 @@ export const CreateEventForm = ({ onChange }: Props) => {
             minimumDate={minDate}
           />
         </View>
-        <View className="mx-4">
-          <Text className="text-white text-xl">Duración</Text>
+      </View>
+
+      {/* Duración */}
+      <View className="flex flex-row gap-4">
+        <View className="p-4 bg-white/20 rounded-md">
+          <ClockIcon />
+        </View>
+        <View className="flex flex-col flex-grow">
+          <Text className="text-white/70 text-lg">Duración</Text>
           <Picker
             mode="dialog"
-            selectionColor={"#fff"}
+            selectionColor="#fff"
             selectedValue={eventInfo.duration}
             onValueChange={(itemValue) => {
               setDuration(itemValue);
             }}
             itemStyle={{ color: "white" }}
-            dropdownIconColor={"white"}
+            dropdownIconColor="white"
             style={{ color: "white" }}
           >
+            <Picker.Item value={0} label="Seleccionar duración" color="white" />
             {EVENTS_DURATION.map((duration) => (
               <Picker.Item
                 key={duration.value}
@@ -99,12 +121,18 @@ export const CreateEventForm = ({ onChange }: Props) => {
           </Picker>
         </View>
       </View>
-      <View className="mx-4 mb-4 bg-white/30 rounded-md">
-        <View className="mx-4">
+
+      {/* Precio */}
+      <View className="flex flex-row gap-4">
+        <View className="p-4 bg-white/20 rounded-md">
+          <MoneyIcon />
+        </View>
+        <View className="flex flex-col flex-grow">
+          <Text className="text-white/70 text-lg">Precio</Text>
           <TextInput
-            className="text-white text-lg my-2"
-            placeholderTextColor={"#999"}
-            placeholder="Precio"
+            className="text-white text-2xl"
+            placeholderTextColor="#999"
+            placeholder="0"
             value={String(eventInfo.price ?? "")}
             onChangeText={(text) =>
               setValue({ price: text ? Number(text) : undefined })
@@ -113,11 +141,19 @@ export const CreateEventForm = ({ onChange }: Props) => {
             inputMode="numeric"
           />
         </View>
-        <View className="mx-4 border-t border-t-neutral-500">
+      </View>
+
+      {/* Seña */}
+      <View className="flex flex-row gap-4">
+        <View className="p-4 bg-white/20 rounded-md">
+          <MoneyIcon />
+        </View>
+        <View className="flex flex-col flex-grow">
+          <Text className="text-white/70 text-lg">Abonado</Text>
           <TextInput
-            className="text-white text-lg my-2"
-            placeholderTextColor={"#999"}
-            placeholder="Seña"
+            className="text-white text-2xl"
+            placeholderTextColor="#999"
+            placeholder="0"
             value={String(eventInfo.deposit ?? "")}
             onChangeText={(text) =>
               setValue({ deposit: text ? Number(text) : undefined })
@@ -126,12 +162,11 @@ export const CreateEventForm = ({ onChange }: Props) => {
             inputMode="numeric"
           />
         </View>
-        <View className="mx-4 py-6">
-          <View className="justify-between flex-row">
-            <Text className="text-white text-lg">Estado del pago</Text>
-            <PaymentStatus event={eventInfo as EventType} />
-          </View>
-        </View>
+      </View>
+
+      {/* Estado de pago */}
+      <View className="py-2">
+        <PaymentStatus event={eventInfo as EventType} />
       </View>
     </View>
   );

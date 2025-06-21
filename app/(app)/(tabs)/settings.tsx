@@ -1,10 +1,10 @@
-import { Text } from "react-native";
 import { Screen } from "@/components/Screen";
+import { PriceConfiguration } from "@/components/PriceConfiguration";
 
-export default function About() {
+export default function Settings() {
   return (
     <Screen>
-      <Text className="text-white">Income</Text>
+      <PriceConfiguration />
     </Screen>
   );
 }
