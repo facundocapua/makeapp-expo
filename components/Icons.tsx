@@ -71,3 +71,7 @@ export const ShareIcon = (props: Props) => {
 export const PencilIcon = (props: Props) => {
   return <FontAwesome name="pencil" size={24} color="white" {...props} />;
 };
+
+export const FileTextIcon = (props: Props) => {
+  return <FontAwesome name="file-text-o" size={24} color="white" {...props} />;
+};

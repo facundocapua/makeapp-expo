@@ -76,7 +76,7 @@ export const formatPrice = (price: number | string) => {
     price = parseFloat(price);
   }
   if (isNaN(price) || price < 0) {
-    return "";
+    price = 0;
   }
 
   return new Intl.NumberFormat("es-AR", {
