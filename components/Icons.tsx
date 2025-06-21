@@ -75,3 +75,7 @@ export const PencilIcon = (props: Props) => {
 export const FileTextIcon = (props: Props) => {
   return <FontAwesome name="file-text-o" size={24} color="white" {...props} />;
 };
+
+export const PlayCircleIcon = (props: Props) => {
+  return <FontAwesome name="play-circle" size={24} color="white" {...props} />;
+};
