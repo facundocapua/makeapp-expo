@@ -28,15 +28,26 @@ export const listSpreadsheets = async (
   accessToken: string,
 ): Promise<DriveFileType[]> => {
   try {
-    const response = await fetch(
-      "https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name,mimeType,createdTime,modifiedTime)&orderBy=modifiedTime desc",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
+    const response = await makeApiCall({
+      url: "/v3/files",
+      accessToken,
+      service: "drive",
+      params: {
+        q: "mimeType='application/vnd.google-apps.spreadsheet'",
+        fields: "files(id,name,mimeType,createdTime,modifiedTime)",
+        orderBy: "modifiedTime desc",
       },
-    );
+    });
+    // const response = await fetch(
+    //   "https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name,mimeType,createdTime,modifiedTime)&orderBy=modifiedTime desc",
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //   },
+    // );
+    console.log("Response from listSpreadsheets:", response);
 
     const data = await response.json();
     return data.files || [];
@@ -110,16 +121,23 @@ export const appendToSpreadsheet = async (
   values: string[][],
   accessToken: string,
 ): Promise<void> => {
+  const params = {
+    includeValuesInResponse: "true",
+    insertDataOption: "INSERT_ROWS",
+    responseDateTimeRenderOption: "FORMATTED_STRING",
+    responseValueRenderOption: "FORMATTED_VALUE",
+    valueInputOption: "USER_ENTERED",
+  };
+
   await makeApiCall({
     url: `/v4/spreadsheets/${spreadsheetId}/values/${range}:append`,
     accessToken,
     method: "POST",
     service: "sheets",
     data: {
-      range,
-      majorDimension: "ROWS",
       values,
     },
+    params,
   });
 };
 

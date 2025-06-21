@@ -1,7 +1,6 @@
 import { getCalendar } from "@/lib/google/calendar";
 import { CALENDAR_NAME } from "@/lib/google/utils";
 import { GoogleSignin, User } from "@react-native-google-signin/google-signin";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useContext, createContext, useState } from "react";
 
 export type ExtendedUser = User & {
@@ -66,8 +65,7 @@ export function SessionProvider({ children }: Props) {
   const signOut = async () => {
     try {
       await GoogleSignin.signOut();
-      // Clear local storage
-      await AsyncStorage.removeItem("makeapp_spreadsheet_id");
+      await GoogleSignin.revokeAccess();
       setSession(null);
     } catch (error) {
       console.error("Error signing out:", error);

@@ -5,6 +5,7 @@ export const CALENDAR_DEFAULT_TIMEZONE: string =
 export const apiUrlsByService = {
   calendar: "https://www.googleapis.com/",
   sheets: "https://sheets.googleapis.com/",
+  drive: "https://www.googleapis.com/drive/",
 };
 
 type MakeApiCallProps = {
@@ -13,6 +14,7 @@ type MakeApiCallProps = {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   service?: keyof typeof apiUrlsByService;
   data?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  params?: Record<string, string>;
 };
 
 export const makeApiCall = (props: MakeApiCallProps): Promise<Response> => {
@@ -25,7 +27,9 @@ export const makeApiCall = (props: MakeApiCallProps): Promise<Response> => {
   } = props;
   const apiUrl = apiUrlsByService[service];
 
-  return fetch(`${apiUrl}${url}`, {
+  const qs = new URLSearchParams(props.params || {}).toString();
+
+  return fetch(`${apiUrl}${url}?${qs}`, {
     method,
     headers: {
       "Content-Type": "application/json",

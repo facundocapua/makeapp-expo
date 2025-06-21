@@ -29,19 +29,20 @@ export default function Income() {
             Registro de Ingresos
           </Text>
 
-          <GoogleSheetsConfig
-            onSpreadsheetConfigured={(id) => setSpreadsheetId(id)}
-          />
-
           {spreadsheetId ? (
             <PaymentForm spreadsheetId={spreadsheetId} />
           ) : (
-            <View className="bg-orange-100 border border-orange-400 rounded-lg p-4 mx-4">
-              <Text className="text-orange-800 text-center">
-                Debes configurar una hoja de cálculo de Google Sheets antes de
-                poder registrar pagos.
-              </Text>
-            </View>
+            <>
+              <GoogleSheetsConfig
+                onSpreadsheetConfigured={(id) => setSpreadsheetId(id)}
+              />
+              <View className="bg-orange-100 border border-orange-400 rounded-lg p-4 mx-4">
+                <Text className="text-orange-800 text-center">
+                  Debes configurar una hoja de cálculo de Google Sheets antes de
+                  poder registrar pagos.
+                </Text>
+              </View>
+            </>
           )}
         </View>
       </ScrollView>

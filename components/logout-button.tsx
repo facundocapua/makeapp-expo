@@ -1,4 +1,5 @@
 import { useSession } from "@/components/SessionProvider";
+import { router } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -25,6 +26,7 @@ export const LogoutButton = () => {
                 text1: "Sesión cerrada",
                 text2: "Has cerrado sesión exitosamente",
               });
+              router.push("/");
             } catch {
               Toast.show({
                 type: "error",

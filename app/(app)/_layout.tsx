@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 export default function MainLayout() {
   const { session, isLoading, signIn } = useSession();
-
+  console.log("Session:", session, "Loading:", isLoading);
   useEffect(() => {
     signIn();
   }, [signIn]);
